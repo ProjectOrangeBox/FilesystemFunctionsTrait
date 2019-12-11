@@ -1,5 +1,7 @@
 <?php
 
+//namespace projectorangebox\cms;
+
 /**
  * These provide wrappers around file functions which base there files off of __ROOT__
  */
@@ -17,12 +19,12 @@ trait FilesystemFunctionsTrait
 	 */
 	static public function setRoot(string $rootPath): void
 	{
-		if (!is_dir($rootPath)) {
+		if (!\realpath($rootPath)) {
 			throw new \Exception('FilesystemFunctionsTrait "' . $rootPath . '" is not a valid directory.');
 		}
 
-		self::$rootPath = $rootPath;
-		self::$rootLength = strlen(self::$rootPath);
+		self::$rootPath = \realpath($rootPath);
+		self::$rootLength = \strlen(self::$rootPath);
 	}
 
 	/**
@@ -41,10 +43,10 @@ trait FilesystemFunctionsTrait
 		}
 
 		/* strip it if it's present */
-		$cleanPath = (substr($path, 0, self::$rootLength) == self::$rootPath) ? substr($path, self::$rootLength) : $path;
+		$cleanPath = (\substr($path, 0, self::$rootLength) == self::$rootPath) ? \substr($path, self::$rootLength) : $path;
 
 		/* stripped or added? */
-		return ($remove) ? rtrim($cleanPath, DIRECTORY_SEPARATOR) : self::$rootPath . DIRECTORY_SEPARATOR . trim($cleanPath, DIRECTORY_SEPARATOR);
+		return ($remove) ? \rtrim($cleanPath, DIRECTORY_SEPARATOR) : self::$rootPath . DIRECTORY_SEPARATOR . \trim($cleanPath, DIRECTORY_SEPARATOR);
 	}
 
 	/**
@@ -114,7 +116,7 @@ trait FilesystemFunctionsTrait
 	{
 		$pathinfo = \pathinfo(self::resolve($path), $options);
 
-		if (is_array($pathinfo) && isset($pathinfo['dirname'])) {
+		if (\is_array($pathinfo) && isset($pathinfo['dirname'])) {
 			$pathinfo['dirname'] = self::resolve($pathinfo['dirname'], true);
 		}
 
@@ -401,7 +403,7 @@ trait FilesystemFunctionsTrait
 			$function($fileinfo->getRealPath());
 		}
 
-		return rmdir($dirname);
+		return \rmdir($dirname);
 	}
 
 	/**
