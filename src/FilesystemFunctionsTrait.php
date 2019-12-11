@@ -6,6 +6,25 @@
 
 trait FilesystemFunctionsTrait
 {
+	static $rootPath = null;
+	static $rootLength = 0;
+
+	/**
+	 * set application root directory
+	 *
+	 * @param string $rootPath
+	 * @return void
+	 */
+	static public function setRoot(string $rootPath): void
+	{
+		if (!is_dir($rootPath)) {
+			throw new \Exception('FilesystemFunctionsTrait "' . $rootPath . '" is not a valid directory.');
+		}
+
+		self::$rootPath = $rootPath;
+		self::$rootLength = strlen(self::$rootPath);
+	}
+
 	/**
 	 * Format a given path so it's based on the applications root folder __ROOT__.
 	 *
@@ -17,17 +36,15 @@ trait FilesystemFunctionsTrait
 	 */
 	static public function resolve(string $path, bool $remove = false): string
 	{
-		if (!defined('__ROOT__')) {
-			throw new \Exception('__ROOT__ not defined.');
+		if (self::$rootPath == null) {
+			throw new \Exception('FilesystemFunctionsTrait root path is not defined.');
 		}
 
-		$rootLen = strlen(__ROOT__);
-
 		/* strip it if it's present */
-		$cleanPath = (substr($path, 0, $rootLen) == __ROOT__) ? substr($path, $rootLen) : $path;
+		$cleanPath = (substr($path, 0, self::$rootLength) == self::$rootPath) ? substr($path, self::$rootLength) : $path;
 
 		/* stripped or added? */
-		return ($remove) ? rtrim($cleanPath, DIRECTORY_SEPARATOR) : __ROOT__ . DIRECTORY_SEPARATOR . trim($cleanPath, DIRECTORY_SEPARATOR);
+		return ($remove) ? rtrim($cleanPath, DIRECTORY_SEPARATOR) : self::$rootPath . DIRECTORY_SEPARATOR . trim($cleanPath, DIRECTORY_SEPARATOR);
 	}
 
 	/**
@@ -42,7 +59,7 @@ trait FilesystemFunctionsTrait
 	{
 		$files = ($recursive) ? self::_globr(self::resolve($pattern), $flags) : \glob(self::resolve($pattern), $flags);
 
-		/* strip the __ROOT__ path */
+		/* strip the root path */
 		foreach ($files as $idx => $file) {
 			$files[$idx] = self::resolve($file, true);
 		}

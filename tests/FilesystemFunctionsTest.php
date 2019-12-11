@@ -8,10 +8,12 @@ class FilesystemFunctionsTest extends TestCase
 
 	protected function setUp()
 	{
-		define('__ROOT__', realpath(__DIR__ . '/../'));
+		$root = realpath(__DIR__ . '/../');
 
-		require_once __ROOT__ . '/src/FilesystemFunctionsTrait.php';
-		require_once __ROOT__ . '/tests/support/App.php';
+		require_once $root . '/src/FilesystemFunctionsTrait.php';
+		require_once $root . '/tests/support/App.php';
+
+		App::setRoot($root);
 	}
 
 	protected function tearDown()
@@ -34,13 +36,13 @@ class FilesystemFunctionsTest extends TestCase
 	public function testBasename()
 	{
 		$this->assertEquals('hello.txt', App::basename(self::$testFolder . '/newfolder/hello.txt'));
-		$this->assertEquals('hello.txt', App::basename(__ROOT__ . self::$testFolder . '/newfolder/hello.txt'));
+		$this->assertEquals('hello.txt', App::basename('/foo/bar/' . self::$testFolder . '/newfolder/hello.txt'));
 	}
 
 	public function testDirname()
 	{
 		$this->assertEquals(self::$testFolder . '/newfolder', App::dirname(self::$testFolder . '/newfolder/hello.txt'));
-		$this->assertEquals(self::$testFolder . '/newfolder', App::dirname(__ROOT__ . self::$testFolder . '/newfolder/hello.txt'));
+		$this->assertEquals('/foo/bar/' . self::$testFolder . '/newfolder', App::dirname('/foo/bar/' . self::$testFolder . '/newfolder/hello.txt'));
 	}
 
 	public function testFile()
@@ -52,7 +54,7 @@ class FilesystemFunctionsTest extends TestCase
 	{
 		$this->assertFalse(App::file_exists(self::$testFolder . '/newfolder/fake.txt'));
 		$this->assertTrue(App::file_exists(self::$testFolder . '/newfolder/multiplelines.txt'));
-		$this->assertTrue(App::file_exists(__ROOT__ . self::$testFolder . '/newfolder/multiplelines.txt'));
+		$this->assertFalse(App::file_exists('/foo/bar/' . self::$testFolder . '/newfolder/multiplelines.txt'));
 	}
 
 	public function testFileGetContents()
