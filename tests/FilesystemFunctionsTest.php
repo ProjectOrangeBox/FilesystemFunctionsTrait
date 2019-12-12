@@ -13,7 +13,7 @@ class FilesystemFunctionsTest extends TestCase
 		require_once $root . '/src/FilesystemFunctionsTrait.php';
 		require_once $root . '/tests/support/App.php';
 
-		App::setRoot($root);
+		App::setRoot($root, true);
 	}
 
 	protected function tearDown()

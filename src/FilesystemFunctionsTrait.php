@@ -8,8 +8,8 @@
 
 trait FilesystemFunctionsTrait
 {
-	static $rootPath = null;
-	static $rootLength = 0;
+	static protected $rootPath = null;
+	static protected $rootLength = 0;
 
 	/**
 	 * set application root directory
@@ -17,7 +17,7 @@ trait FilesystemFunctionsTrait
 	 * @param string $rootPath
 	 * @return void
 	 */
-	static public function setRoot(string $rootPath): void
+	static public function setRoot(string $rootPath, $chdir = false): void
 	{
 		if (!\realpath($rootPath)) {
 			throw new \Exception('FilesystemFunctionsTrait "' . $rootPath . '" is not a valid directory.');
@@ -25,6 +25,15 @@ trait FilesystemFunctionsTrait
 
 		self::$rootPath = \realpath($rootPath);
 		self::$rootLength = \strlen(self::$rootPath);
+
+		if ($chdir) {
+			chdir(self::$rootPath);
+		}
+	}
+
+	static public function getRoot(): string
+	{
+		return self::$rootPath;
 	}
 
 	/**
