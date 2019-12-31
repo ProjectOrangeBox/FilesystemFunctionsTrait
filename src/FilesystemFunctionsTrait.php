@@ -19,15 +19,17 @@ trait FilesystemFunctionsTrait
 	 */
 	static public function setRoot(string $rootPath, $chdir = false): void
 	{
-		if (!\realpath($rootPath)) {
+		$realpath = \realpath($rootPath);
+
+		if (!$realpath) {
 			throw new \Exception('FilesystemFunctionsTrait "' . $rootPath . '" is not a valid directory.');
 		}
 
-		self::$rootPath = \realpath($rootPath);
-		self::$rootLength = \strlen(self::$rootPath);
+		self::$rootPath = $realpath;
+		self::$rootLength = \strlen($realpath);
 
 		if ($chdir) {
-			chdir(self::$rootPath);
+			\chdir(self::$rootPath);
 		}
 	}
 
@@ -71,9 +73,13 @@ trait FilesystemFunctionsTrait
 		$files = ($recursive) ? self::_globr(self::resolve($pattern), $flags) : \glob(self::resolve($pattern), $flags);
 
 		/* strip the root path */
-		foreach ($files as $idx => $file) {
-			$files[$idx] = self::resolve($file, true);
-		}
+		#foreach ($files as $idx => $file) {
+		#	$files[$idx] = self::resolve($file, true);
+		#}
+
+		array_walk($files, function ($value, $index) {
+			$files[$index] = self::resolve($value, true);
+		});
 
 		return $files;
 	}
