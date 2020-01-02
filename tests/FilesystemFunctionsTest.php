@@ -17,7 +17,8 @@ class FilesystemFunctionsTest extends TestCase
 	}
 
 	protected function tearDown()
-	{ }
+	{
+	}
 
 	public function testMkdir()
 	{
@@ -86,6 +87,7 @@ class FilesystemFunctionsTest extends TestCase
 
 		$this->assertTrue(is_array($files));
 		$this->assertEquals(3, count($files));
+		$this->assertEquals(["/test/working/newfolder/hello.txt", "/test/working/newfolder/multiplelines.txt", "/test/working/newfolder/anotherfolder/hello.txt"], $files);
 	}
 
 	public function testIs_file()

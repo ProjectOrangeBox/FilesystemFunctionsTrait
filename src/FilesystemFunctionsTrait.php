@@ -68,18 +68,16 @@ trait FilesystemFunctionsTrait
 	 * @param bool $recursive false
 	 * @return array
 	 */
-	static public function glob(string $pattern, int $flags = 0, bool $recursive = false): array
+	static public function glob(string $pattern, int $flags = 0, bool $recursive = false, bool $strip = true): array
 	{
 		$files = ($recursive) ? self::_globr(self::resolve($pattern), $flags) : \glob(self::resolve($pattern), $flags);
 
 		/* strip the root path */
-		#foreach ($files as $idx => $file) {
-		#	$files[$idx] = self::resolve($file, true);
-		#}
-
-		array_walk($files, function ($value, $index) {
-			$files[$index] = self::resolve($value, true);
-		});
+		if ($strip) {
+			foreach ($files as $idx => $file) {
+				$files[$idx] = self::resolve($file, true);
+			}
+		}
 
 		return $files;
 	}
@@ -564,7 +562,7 @@ trait FilesystemFunctionsTrait
 		} elseif (\is_scalar($data)) {
 			$string = '<?php return "' . \str_replace('"', '\"', $data) . '";';
 		} else {
-			throw new \Exception('var export php unknown data type.');
+			throw new \Exception('Unknown data type.');
 		}
 
 		return $string;
