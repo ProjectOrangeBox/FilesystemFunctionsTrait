@@ -1,12 +1,13 @@
 <?php
 
-//namespace projectorangebox\cms;
-
 /**
- * These provide wrappers around file functions which base there files off of __ROOT__
+ * File System Functions
+ *
+ * File System Abstraction which automatically
+ * works in a given root path
+ *
  */
-
-trait FilesystemFunctionsTrait
+class FS
 {
 	static protected $rootPath = null;
 	static protected $rootLength = 0;
@@ -178,6 +179,17 @@ trait FilesystemFunctionsTrait
 	static public function is_dir(string $filename): bool
 	{
 		return \is_dir(self::resolve($filename));
+	}
+
+	/**
+	 * is_writable — Tells whether the filename is writable
+	 *
+	 * @param string $filename
+	 * @return bool
+	 */
+	static public function is_writable(string $filename): bool
+	{
+		return \is_writable(self::resolve($filename));
 	}
 
 	/**
@@ -566,5 +578,10 @@ trait FilesystemFunctionsTrait
 		}
 
 		return $string;
+	}
+
+	static public function var_export_file(string $pathname, $data): int
+	{
+		return self::atomic_file_put_contents($pathname, self::var_export_php($data));
 	}
 } /* end class */
